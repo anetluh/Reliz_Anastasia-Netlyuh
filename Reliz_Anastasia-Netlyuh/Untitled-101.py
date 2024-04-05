@@ -1,13 +1,16 @@
+#Імпорт бібліотек:
+#Імпорт усіх функцій та класів з бібліотеки Pygame.
+#Імпорт функції randint з модулю random, що дозволяє генерувати випадкові цілі числа.
 from pygame import *
 from random import randint
 #звук
 mixer.init()
 mixer.music.load("IMG_1928 (audio-extractor.net).mp3")
 mixer.music.play()
-
-
-
 #зображення
+#GameSprite: Базовий клас для створення ігрових об'єктів. Включає методи для завантаження зображення, встановлення швидкості, розміщення та оновлення позиції на екрані.
+#Player1 та Player2: Класи для гравців гри. Успадковані від GameSprite, містять методи для оновлення позиції гравця відповідно до натискання клавіш.
+#Friend та Enemy: Класи для об'єктів, які гравець повинен збирати (друзів) та уникати (ворогів). Також успадковані від GameSprite
 class GameSprite(sprite.Sprite):
     def __init__(self, player_image, player_speed, player_x, player_y, width, hight ):
         super().__init__()
@@ -19,7 +22,7 @@ class GameSprite(sprite.Sprite):
 
     def recet(self):
         window.blit(self.image, (self.rect.x, self.rect.y))    
-
+#Player1 та Player2: Класи для гравців гри. Успадковані від GameSprite, містять методи для оновлення позиції гравця відповідно до натискання клавіш.
 class Player1(GameSprite):
     def update(self):
         keys_pressed = key.get_pressed()
@@ -28,9 +31,7 @@ class Player1(GameSprite):
 
         if keys_pressed[K_RIGHT] and self.rect.x < win_width - 80:
               self.rect.x += self.speed  
-
-
-
+#Player1 та Player2: Класи для гравців гри. Успадковані від GameSprite, містять методи для оновлення позиції гравця відповідно до натискання клавіш.
 class Player2(GameSprite):
     def update(self):
         keys_pressed = key.get_pressed()
@@ -39,9 +40,8 @@ class Player2(GameSprite):
 
         if keys_pressed[K_d] and self.rect.x < win_width - 450:
             self.rect.x += self.speed    
- 
 
-
+#Friend та Enemy: Класи для об'єктів, які гравець повинен збирати (друзів) та уникати (ворогів). Також успадковані від GameSprite
 class Friend(GameSprite):
     def update(self):
         self.rect.y += self.speed
@@ -51,10 +51,7 @@ class Friend(GameSprite):
         if self.rect.y > win_height-180:
             self.rect.x = randint(80, win_width - 80)
             self.rect.y = 0
-
-        
-     
-
+#Friend та Enemy: Класи для об'єктів, які гравець повинен збирати (друзів) та уникати (ворогів). Також успадковані від GameSprite
 class Enemy(GameSprite):
     def update(self):
         self.rect.y += self.speed
@@ -64,13 +61,7 @@ class Enemy(GameSprite):
             self.rect.x = randint(80, win_width - 80)
             self.rect.y = 0
 
-        
-
-
-  
-
 score1 = 0
-
 score2 = 0
 
 #ігрова сцена         
@@ -86,7 +77,8 @@ font.init()
 font2 = font.Font(None, 36)
 
 #пишемо текст на екрані
-
+#Створюються екземпляри класів Player1 та Player2 для гравців.
+#Створюються групи об'єктів eggs_good та eggs_bad для друзів та ворогів відповідно.
     #спрайти
 wolf1 = "wolf_2001.png"
 wolf2= "wolf_2002.png"
@@ -114,8 +106,8 @@ font.init()
 font1 = font.SysFont('Calibri',36)
 font2 = font.SysFont('Calibri',45)
 font3 = font.SysFont('Calibri',80)
-txt_lose_game = font2.render('You lose',True,(255,15,51))
-txt_win_game = font2.render('You win',True,(50,205,50))
+txt_lose_game = font2.render('Ти програв',True,(255,15,51))
+txt_win_game = font2.render('Ти виграв',True,(50,205,50))
 
 
 
@@ -134,11 +126,12 @@ while run:
             if e.key == K_UP and finish == True:
                 eggs_good= sprite.Group()
                 for i in range(1, 6):
+#Створюється група об'єктів "добрих яєць" eggs_good, в яку додаються п'ять об'єктів "яєць" з випадковими параметрами.
                     egg = Friend("egg.norm(1).png", randint(1, 7),randint(20, win_width - 400), -35, 50, 60)
                     eggs_good.add(egg)
                     egg = Friend("egg.norm(1).png", randint(1, 7),randint(win_width - 400, win_width - 20), -35, 50, 60)
                     eggs_good.add(egg)
-
+#Створюється група об'єктів "поганих яєць" eggs_bad, в яку додаються чотири об'єкти "поганих яєць"
                 eggs_bad= sprite.Group()
                 for i in range(1, 4):
                     egg_bad = Enemy("bad_egg.png", randint(5, 7),randint(win_width - 400, win_width - 20), -35, 50, 60)
@@ -153,6 +146,8 @@ while run:
                 finish= False
 
 
+#Ця частина коду відображує і оновлює рахунок гравців у грі та виконує обробку зіткнень 
+#між гравцями та об'єктами "добрих" або "поганих" яєць.
     if not finish:       
         text = font1.render("Рахунок:"+ str(score1), 1, (36, 36, 143)) 
         text1 = font1.render("Рахунок:"+ str(score2), 1, (36, 36, 143)) 
@@ -185,7 +180,11 @@ while run:
         for egg_b in  eggs_bad.sprites():
             if egg_b.rect.y > win_height:
                 egg_b.rect.y = -35
-                
+    #Цей фрагмент коду перевіряє, чи один з гравців набрав 4 бали. Якщо гравець 2 набрав 4 бали,
+    #на екрані відображається повідомлення про його перемогу, а гравець 1 програв.
+    #Якщо гравець 1 набрав 4 бали, на екрані відображається повідомлення про його перемогу, 
+    #а гравець 2 програв. Потім всі яйця видаляються, рахунки гравців скидаються до 0
+    #і гра завершується.           
         if score2 == 4:
             window.blit(txt_win_game,(150,200))
             window.blit(txt_lose_game,(550,200))
